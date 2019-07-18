@@ -80,7 +80,7 @@ def create_session (client_id, user_name, password, clean_session = True, host =
         'cleanSession' : clean_session
     }
     # send request
-    conn.request ("POST", "/login", json.dumps (params))
+    conn.request ("POST", "/login", json.dumps (params), headers = {"Connection":" keep-alive"})
     result = conn.getresponse()
     body   = result.read ()
     
@@ -111,8 +111,11 @@ def __prepare_headers (session):
     conn       = session['conn']
 
     # build login parameters do login
-    params = { 'tokenId' : login_data['tokenId'] }
-    headers = { 'Cookie' : "tokenId=%s" % login_data['tokenId'] }
+    params  = { 'tokenId' : login_data['tokenId'] }
+    headers = {
+        'Cookie' : "tokenId=%s" % login_data['tokenId'],
+        "Connection":" keep-alive"
+    }
 
     # return common headers
     return (conn, login_data, params, headers)
@@ -139,14 +142,14 @@ def publish (session, topic, qos, msg, retain = False, dup = False):
     (conn, login_data, params, headers) = __prepare_headers (session)
 
     # params 
-    params['topic'] = topic_pub # String value 
+    params['topic'] = topic # String value 
     params['qos'] = qos  # Int value, 0, 1, 2
     params['payload'] = base64.b64encode (msg)  # Message base64 encoded
     params['retain'] = False
     params['dup'] = False
     
     # send PUBLISH
-    dbg ("PUBLISH :: (%s) by (clientId=%s, userName=%s).." % (topic_pub, session['client_id'], session['user_name']))
+    dbg ("PUBLISH :: (%s) by (clientId=%s, userName=%s).." % (topic, session['client_id'], session['user_name']))
     conn.request ("POST", "/publish", json.dumps (params), headers)
     
     dbg ("INFO: publish request sent, waiting for response..")
