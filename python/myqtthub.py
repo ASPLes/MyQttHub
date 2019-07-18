@@ -178,6 +178,5 @@ def logout (session):
     
     if result.status != 200:
         return (False, "LOGOUT ERROR: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
-        sys.exit (-1)
         
     return (True, "INFO: logout request OK: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
