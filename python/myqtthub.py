@@ -55,7 +55,8 @@ def create_session (client_id, user_name, password, clean_session = True, host =
     import myqtthub
     (status, info, session) = myqtthub.create_session (client_id, user_name, password)
     if not status:
-        print "ERROR: failed to connect to MyQttHub.com. Error was: %s" % session
+        print "ERROR: failed to connect to MyQttHu   # logoout from MyQttHub.com
+   myqtt.logout (session)b.com. Error was: %s" % session
         sys.exit (-1)
     # Reached this point, session holds a session token that will be required for next steps
 
@@ -171,6 +172,11 @@ def publish (session, topic, qos, msg, retain = False, dup = False):
 def logout (session):
     """
     Allows to close an open MyQttHub session returned by create_session
+    
+    Example:
+    
+    # logoout from MyQttHub.com
+    myqtt.logout (session)
     """
 
     # get login session and connection 
