@@ -135,6 +135,11 @@ def publish (session, topic, qos, msg, retain = False, dup = False):
     qos     -- [Int]  valid QoS value, 0, 1 or 2
     msg     -- [Opaque] Opaque string, binary, json, textual message to send as body content for the message.
     
+    Example:
+    
+    # session is the object you got as a result of calling to myqtthub.create_session
+    myqtthub.publish (session, "this/is/a/test", 0, "Your message content")
+
 
     """
 
