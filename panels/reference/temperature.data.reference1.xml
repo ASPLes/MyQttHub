@@ -1,0 +1,30 @@
+<doc background-color="blue" name="REFERENCE 1: Temperature dashboard" description="Panel with temperature data">
+  <!--
+      This panel shows temperature, humidity and amount left in a tank, along with a message and a logo
+      Panel shows data from the provided topics:
+      
+      - temp/device/002
+      - temp/device/004
+      - temp/device/006
+  -->
+  
+  <grid vertical-centered="true" margin-top="30px" >
+   
+    <!-- column with some information -->
+    <column>
+      <message color="violet" icon="thermometer half" header="Temperatura del reactor principal" size="big" icon-border="circular" icon-color="violet" icon-size="big" icon-inverted="true">
+        Curvature engine temperature (Spok!). More text. Text message inside.
+      </message>
+      <image centered="true" size="medium" src="https://myqtthub.com/assets/images/myqtthub-512x512.png" icon-inverted="false"></image>
+    </column>
+    
+    <!-- columns with temperatures -->
+    <column>
+      <stat label='Temperature' topic='temp/device/002'  suffix='º' size='huge' icon='thermometer half' color='yellow' ></stat>
+      <stat label='Humidity' topic='temp/device/004' attr-name="humidity" suffix="%" size='huge' icon='umbrella' color='green' ></stat>
+      <stat label='Amount left in the tank' topic='temp/device/006' attr-name="scale" suffix=" Uts" size='big' icon='battery half' color='blue' ></stat>
+      <last-update color="olive" size="huge"></last-update> <refresh-button size="huge" color="violet" icon="thermometer"></refresh-button>
+    </column>
+  </grid>
+  
+</doc>
