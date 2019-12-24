@@ -1,3 +1,4 @@
 <panels>
   <panel value="temperature.data.reference1.xml" />
+  <panel value="electrical.consumption.reference2.xml" />  
 </panels>
