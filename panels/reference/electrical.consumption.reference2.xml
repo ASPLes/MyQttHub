@@ -1,20 +1,51 @@
-<doc background-color="black" padding="12px">
-  <header icon="angle double right" icon-size="big" icon-border="circular" icon-color="green" size="large" color="white" icon-inverted="true" sub-header="Main power at floor 4h">Electric consumption at central floor 4th rooms</header>
+<doc background-color="black" padding="24px">
+  <header icon="angle double right" icon-size="big" icon-border="circular" icon-color="green" size="40pt" color="white" icon-inverted="true" sub-header="Main power at floor 4h">Electric consumption at central floor 4th rooms</header>
   <grid fluid="true" padding-top="12px">
     <column>
       
-      <stat  ></stat>
+      <stat topic="central/floor4th/phase1/current" attr-name="voltage2" suffix=" A" icon="plug" ></stat>
       
     </column>
     <column>
       
-      <stat  ></stat>
+         <stat topic="central/floor4th/phase2/current" attr-name="voltage2" suffix=" A" icon="plug"></stat>
       
     </column>
     <column>
       
-      <stat  ></stat>
+         <stat topic="central/floor4th/phase3/current" attr-name="voltage2" suffix=" A" icon="plug"></stat>
       
     </column>
   </grid>
+  <header icon="angle double right" icon-size="big" icon-border="circular" icon-color="olive" size="40pt" color="white" icon-inverted="true" sub-header="Main power at central Iviris">Electric consumption at Iviris central</header>
+  <grid fluid="true" padding-top="12px">
+    <column>
+      
+      <stat topic="central/iviris/phase1/current" attr-name="voltage2" suffix=" A" icon="plug"></stat>
+      
+    </column>
+    <column>
+      
+         <stat topic="central/iviris/phase2/current" attr-name="voltage2" suffix=" A" icon="plug"></stat>
+      
+    </column>
+    <column>
+      
+         <stat topic="central/iviris/phase3/current" attr-name="voltage2" suffix=" A" icon="plug"></stat>
+      
+    </column>
+  </grid>
+  <header icon="angle double right" icon-size="big" icon-border="circular" icon-color="olive" size="40pt" color="white" icon-inverted="true" sub-header="Main power at central Iviris">Total consumption</header>
+  <grid fluid="true" padding-top="12px">
+    <column>
+      
+      <stat topic="central/total/current" attr-name="voltage2" suffix=" A" icon="plug"></stat>
+      
+    </column>
+    <column>
+      
+         <stat topic="central/total/kwh" attr-name="voltage2" suffix=" kW/h" icon="plug"></stat>
+      
+    </column>
+  </grid>  
 </doc>
