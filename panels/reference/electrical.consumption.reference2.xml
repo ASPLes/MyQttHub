@@ -1,9 +1,9 @@
 <doc background-color="black" padding="24px" transition="fade up">
-  <header icon="angle double right" icon-size="big" icon-border="circular" icon-color="green" size="40pt" color="white" icon-inverted="true" sub-header="Main power at floor 4h" transition="fade up">Electric consumption at central floor 4th rooms</header>
-  <grid fluid="true" padding-top="12px" >
+  <header icon="angle double right" icon-size="big" icon-border="circular" icon-color="green" size="40pt" color="white" icon-inverted="true" sub-header="Main power at floor 4h" transition="fade up" href="https://myqtthub.com">Electric consumption at central floor 4th rooms</header>
+  <grid fluid="true" padding-top="12px" transition="fade up">
     <column>
       
-      <stat topic="central/floor4th/phase1/current" attr-name="voltage2" suffix=" A" icon="plug" ></stat>
+      <stat topic="central/floor4th/phase1/current" attr-name="voltage2" suffix=" A" icon="plug" href="https://myqtthub.com"></stat>
       
     </column>
     <column>
