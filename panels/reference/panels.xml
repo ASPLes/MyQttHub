@@ -1,4 +1,5 @@
 <panels>
   <panel value="temperature.data.reference1.xml" />
-  <panel value="electrical.consumption.reference2.xml" />  
+  <panel value="electrical.consumption.reference2.xml" />
+  <panel value="mosaic.nested.reference3.xml" />    
 </panels>

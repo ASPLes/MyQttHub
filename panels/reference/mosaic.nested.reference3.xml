@@ -1,0 +1,54 @@
+<doc>
+	<!-- Place here your declarations. Use [Add element] button to start adding layout and elements -->
+	<grid fluid="yes">
+<!--  		<column background-color="brown">FIRST: Text row 1, column 2</column> -->
+
+        <column>
+			<grid fluid="yes" background-color="red">
+				<column>Text row 1, column 1</column>
+				<column>Text row 1, column 2</column>
+				<column>Text row 1, column 3</column>
+				<column>Text row 1, column 4</column>
+			</grid>
+			<grid fluid="yes" background-color="orange">
+				<column>Text row 2, column 1</column>
+				<column>Text row 2, column 2</column>
+				<column>Text row 2, column 3</column>
+				<column>Text row 2, column 4</column>
+			</grid>
+			<grid fluid="yes" background-color="blue">
+				<column>Text row 3, column 1</column>
+				<column>Text row 3, column 2</column>
+				<column>Text row 3, column 3</column>
+				<column>Text row 3, column 4</column>
+			</grid>
+			<grid fluid="yes" background-color="purple">
+				<column>Text row 4, column 1</column>
+				<column>Text row 4, column 2</column>
+				<column>Text row 4, column 3</column>
+				<column>Text row 4, column 4</column>
+			</grid>
+        </column>          
+		<column background-color="blue">SECOND: Text row 1, column 2</column>
+		<column background-color="teal">THIRD: Text row 1, column 3</column>
+		<column background-color="green">FOURTH: Text row 1, column 4</column>
+	</grid>
+	<grid fluid="yes">
+		<column>Text row 2, column 1</column>
+		<column>Text row 2, column 2</column>
+		<column>Text row 2, column 3</column>
+		<column>Text row 2, column 4</column>
+	</grid>
+	<grid fluid="yes">
+		<column>Text row 3, column 1</column>
+		<column>Text row 3, column 2</column>
+		<column>Text row 3, column 3</column>
+		<column>Text row 3, column 4</column>
+	</grid>
+	<grid fluid="yes">
+		<column>Text row 4, column 1</column>
+		<column>Text row 4, column 2</column>
+		<column>Text row 4, column 3</column>
+		<column>Text row 4, column 4</column>
+	</grid>
+</doc>
