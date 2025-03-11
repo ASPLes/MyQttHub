@@ -55,8 +55,7 @@ def create_session (client_id, user_name, password, clean_session = True, host =
     import myqtthub
     (status, info, session) = myqtthub.create_session (client_id, user_name, password)
     if not status:
-        print "ERROR: failed to connect to MyQttHu   # logoout from MyQttHub.com
-   myqtt.logout (session)b.com. Error was: %s" % session
+        print "ERROR: failed to connect to MyQttHub.com. Error was: %s" % session
         sys.exit (-1)
     # Reached this point, session holds a session token that will be required for next steps
 
@@ -167,6 +166,62 @@ def publish (session, topic, qos, msg, retain = False, dup = False):
     # end if
 
     return (True, "PUBLISH: message published without error")
+
+def domain_view (domain_name, session):
+    """
+    Implements /domain/view API: allows to get complete reference of
+    the domain/hub object by the provided name, according to current
+    permissions.
+    
+    Connected session needs to be an admin with access to the provided
+    domain in order to get valid data.
+    """
+
+    # get login session and connection 
+    (conn, login_data, params, headers) = __prepare_headers (session)
+
+    # params 
+    params['domain'] = domain_name
+    
+    # send PUBLISH
+    dbg ("DOMAIN-VIEW :: (%s) by (clientId=%s, userName=%s).." % (domain_name, session['client_id'], session['user_name']))
+    conn.request ("POST", "/domain/view", json.dumps (params), headers)
+    
+    dbg ("INFO: request sent, waiting for response..")
+    result = conn.getresponse()
+    body   = result.read ()
+    dbg ("INFO: request result: %s" % result)
+    if result.status != 200:
+        return (False, "ERROR: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
+    # end if
+
+    return (True, json.loads (body))
+
+def list_domains (session):
+    """
+    Implements /domain/list API: allows to list all domains (MyQtt Hubs) available
+    for the current admin logged.
+    
+    Connected session needs to be an admin of at last one domain (MyQtt Hubs).
+
+    """
+
+    # get login session and connection 
+    (conn, login_data, params, headers) = __prepare_headers (session)
+
+    # send PUBLISH
+    dbg ("DOMAIN-LIST :: by (clientId=%s, userName=%s).." % (session['client_id'], session['user_name']))
+    conn.request ("POST", "/domain/list", headers = headers)
+    
+    dbg ("INFO: request sent, waiting for response..")
+    result = conn.getresponse()
+    body   = result.read ()
+    dbg ("INFO: request result: %s" % result)
+    if result.status != 200:
+        return (False, "ERROR: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
+    # end if
+
+    return (True, json.loads (body))
 
 
 def logout (session):
