@@ -190,7 +190,7 @@ def domain_view (domain_name, session):
     dbg ("INFO: request sent, waiting for response..")
     result = conn.getresponse()
     body   = result.read ()
-    dbg ("INFO: request result: %s" % result)
+    dbg ("INFO: request result: %s" % body)
     if result.status != 200:
         return (False, "ERROR: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
     # end if
@@ -223,16 +223,20 @@ def list_domains (session):
 
     return (True, json.loads (body))
 
-def general_request (session, url, params = {}, method = "POST"):
+def general_request (session, url, _params = {}, method = "POST"):
     """
     Allows to implement a generic API request by providing session, method, url and params.
     """
 
     # get login session and connection 
     (conn, login_data, params, headers) = __prepare_headers (session)
+    for k in _params:
+        dbg ("REQUEST :: importing key: %s => %s" % (k, _params[k]))
+        params[k] = _params[k]
+    # end for
 
     # send PUBLISH
-    dbg ("REQUEST :: by (clientId=%s, userName=%s).." % (session['client_id'], session['user_name']))
+    dbg ("REQUEST :: by (clientId=%s, userName=%s): params=%s.." % (session['client_id'], session['user_name'], params))
     conn.request (method, url, json.dumps (params), headers)
     
     dbg ("REQUEST: request sent, waiting for response..")
