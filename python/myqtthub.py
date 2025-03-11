@@ -231,7 +231,8 @@ def logout (session):
     Example:
     
     # logoout from MyQttHub.com
-    myqtt.logout (session)
+    (status, info) = myqtthub.logout (session)
+    # do some error reporting here if needed
     """
 
     # get login session and connection 
