@@ -55,7 +55,7 @@ def create_session (client_id, user_name, password, clean_session = True, host =
     import myqtthub
     (status, info, session) = myqtthub.create_session (client_id, user_name, password)
     if not status:
-        print "ERROR: failed to connect to MyQttHub.com. Error was: %s" % session
+        print "ERROR: failed to connect to MyQttHub.com. Error was: %s" % info
         sys.exit (-1)
     # Reached this point, session holds a session token that will be required for next steps
 
