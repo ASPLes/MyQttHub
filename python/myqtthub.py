@@ -211,7 +211,7 @@ def list_domains (session):
 
     # send PUBLISH
     dbg ("DOMAIN-LIST :: by (clientId=%s, userName=%s).." % (session['client_id'], session['user_name']))
-    conn.request ("POST", "/domain/list", headers = headers)
+    conn.request ("POST", "/domain/list", json.dumps ({}), headers)
     
     dbg ("INFO: request sent, waiting for response..")
     result = conn.getresponse()
