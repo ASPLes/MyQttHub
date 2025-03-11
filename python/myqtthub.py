@@ -223,6 +223,28 @@ def list_domains (session):
 
     return (True, json.loads (body))
 
+def general_request (session, url, params = {}, method = "POST"):
+    """
+    Allows to implement a generic API request by providing session, method, url and params.
+    """
+
+    # get login session and connection 
+    (conn, login_data, params, headers) = __prepare_headers (session)
+
+    # send PUBLISH
+    dbg ("REQUEST :: by (clientId=%s, userName=%s).." % (session['client_id'], session['user_name']))
+    conn.request (method, url, json.dumps (params), headers)
+    
+    dbg ("REQUEST: request sent, waiting for response..")
+    result = conn.getresponse()
+    body   = result.read ()
+    dbg ("REQUEST: request result: %s" % body)
+    if result.status != 200:
+        return (False, "ERROR: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
+    # end if
+
+    return (True, json.loads (body))    
+
 
 def logout (session):
     """
