@@ -36,7 +36,7 @@ to MyQttHub using its HTTPS API. The document will walk you through:
 3) Download first a copy of the following file or github fork:
 
   ```bash
-  >> wget https://github.com/ASPLes/MyQttHub/blob/master/python/myqtthub.py
+  >> wget https://raw.githubusercontent.com/ASPLes/MyQttHub/refs/heads/master/python/myqtthub.py
   ```
 
 4) Now at your python files include it with:
