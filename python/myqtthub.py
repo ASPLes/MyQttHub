@@ -95,7 +95,7 @@ def create_session (client_id, user_name, password, clean_session = True, host =
     dbg ("MYQTT CONNECT: login request: status=%d, reason=%s :: %s (token: %s)" % (result.status, result.reason, login_data, login_data['tokenId']))
 
     # return data from login
-    session = {'login_data' : login_data, 'conn' : conn, 'client_id' : client_id, 'user_name' : user_name}
+    session = {'login_data' : login_data, 'conn' : conn, 'client_id' : client_id, 'user_name' : user_name, 'host' : host, 'port' : port}
     return (True, "Login ok", session)
 
 
