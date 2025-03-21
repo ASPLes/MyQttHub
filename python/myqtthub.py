@@ -223,6 +223,15 @@ def list_domains (session):
 
     return (True, json.loads (body))
 
+def list_devices (domain_name, session):
+    """
+    Allows to get current devices installed on the provided hub/domain (domain_name).
+
+    Method returns:
+    (status, devices) -- where status represents True/False according to operation completion and devices includes list of devices or error indication in case of failure.
+    """
+    return general_request (session, "/device/list", {"domainName" : domain_name})
+
 def general_request (session, url, _params = {}, method = "POST"):
     """
     Allows to implement a generic API request by providing session, method, url and params.
