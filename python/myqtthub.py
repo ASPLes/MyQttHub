@@ -1,5 +1,5 @@
 # MyQttHub.com Python support for MyQttHub API
-# Copyright 2019 Advanced Software Production Line, S.L
+# Copyright 2025 Advanced Software Production Line, S.L
 # 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -24,6 +24,7 @@
 import json
 import httplib
 import base64
+import time
 
 verbose = False
 
@@ -31,6 +32,20 @@ def dbg (msg):
     if verbose:
         print msg
     return
+
+def gen_password ():
+    """
+    Generates a new password that will be sent to the user
+    """
+    pass_string = "_./%&@=#*+-1234567890AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+    x = 0
+    new_pass = ''
+    import random
+    while x < 24:
+        position = random.randint(0, len(pass_string) - 1)
+        new_pass += pass_string[position]
+        x += 1
+    return str(new_pass)
 
 def create_session (client_id, user_name, password, clean_session = True, host = "node02.myqtthub.com", port = 443):
     """
@@ -91,6 +106,11 @@ def create_session (client_id, user_name, password, clean_session = True, host =
         return (False, "LOGIN ERROR: status=%d, reason=%s :: %s" % (result.status, result.reason, body), None)
 
     # Login ok
+    dbg ("MYQTT CONNECT: parsing body for login response: %s" % body)
+    # Service denied (auth login failure, wrong password, identifier rejected or connection refused)
+    if "Service denied" in body or "auth login failure" in body or "wrong password" in body:
+        return (False, body, None)
+    
     login_data = json.loads (body)
     dbg ("MYQTT CONNECT: login request: status=%d, reason=%s :: %s (token: %s)" % (result.status, result.reason, login_data, login_data['tokenId']))
 
@@ -121,7 +141,7 @@ def __prepare_headers (session):
     return (conn, login_data, params, headers)
 
 
-def publish (session, topic, qos, msg, retain = False, dup = False):
+def publish (session, topic, qos, msg, retain = False, dup = False, wait_for_reply = None):
     """
     
     Allows to publish a message over a open MyQttHub session (see
@@ -134,6 +154,16 @@ def publish (session, topic, qos, msg, retain = False, dup = False):
     topic   -- [String] plain string representing the topic to publish to: test/this/topic, temp/device/001
     qos     -- [Int]  valid QoS value, 0, 1 or 2
     msg     -- [Opaque] Opaque string, binary, json, textual message to send as body content for the message.
+
+    Advanced options
+
+    wait_for_reply -- [Int] Optional indication in seconds to enable wait for reply and also to provide a time limit for that reply to happens.
+
+      | This option, if enabled (> 0) will configure a random reply topic that will be configured into params.
+      | That reply topic can be used by receiver of the message to to PUBLISH a message to that topic, so a
+      | reply will be received.  
+      | 
+      | In case wait_for_reply > 0 is provided, function will return (True, messages) if some reply is received.
     
     Example:
     
@@ -152,6 +182,30 @@ def publish (session, topic, qos, msg, retain = False, dup = False):
     params['payload'] = base64.b64encode (msg)  # Message base64 encoded
     params['retain'] = False
     params['dup'] = False
+
+    if wait_for_reply and wait_for_reply > 0:
+        # BEGIN: wait for reply support
+        import hashlib
+        replytopic              = "reply/" + hashlib.md5 ("/%s" % gen_password ()).hexdigest ()
+        params['replytopic'] = replytopic
+
+        # params
+        params['subscriptions'] = [(replytopic, 0)]
+
+        # send request
+        dbg ("SUBSCRIBE :: %s by (clientId=%s, userName=%s).." % (replytopic, session['client_id'], session['user_name']))
+        conn.request ("POST", "/subscribe", json.dumps (params), headers)
+        # print "INFO: subscribe request sent, waiting for response.."
+        result = conn.getresponse()
+        body   = result.read ()
+        # print "INFO: subscribe request result: %s" % result
+        if result.status != 200:
+            return (False, "While attempting to implement wait_for_reply=%d, received SUBSCRIBE ERROR: status=%d, reason=%s :: %s" % (wait_for_reply, result.status, result.reason, body))
+        # end if
+        subscribe_codes = json.loads (body)
+        dbg ("publish: configured wait_for_reply=%d with reply SUBSCRIBE: request OK: status=%d, reason=%s :: %s" % (wait_for_reply, result.status, result.reason, subscribe_codes))
+        # END: wait for reply support
+    # end if
     
     # send PUBLISH
     dbg ("PUBLISH :: (%s) by (clientId=%s, userName=%s).." % (topic, session['client_id'], session['user_name']))
@@ -165,6 +219,38 @@ def publish (session, topic, qos, msg, retain = False, dup = False):
         return (False, "PUBLISH ERROR: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
     # end if
 
+    if wait_for_reply and wait_for_reply > 0:
+        # now pull results
+        wait_factor  = 2
+        wait_loop    = (wait_for_reply * wait_factor)
+        while wait_loop > 0:
+            # send request
+            dbg("PULL :: by (clientId=%s, userName=%s, remaining wait=%d).." % (session['client_id'], session['user_name'], wait_loop))
+            conn.request ("POST", "/pull", json.dumps (params), headers)
+            # print "INFO: pull request sent, waiting for response.."
+            result = conn.getresponse()
+            body   = result.read ()
+            # print "INFO: pull request result: %s" % result
+            if result.status != 200:
+                # logout here
+                return (False, "While implemeting wait_for_reply=%d, PULL ERROR: status=%d, reason=%s :: %s" % (wait_for_reply, result.status, result.reason, body), None)
+            # end if
+
+            # parse messages
+            messages = json.loads (body)
+            for m in messages:
+                m['payload'] = base64.b64decode (m['payload'])
+            # end for
+
+            if len (messages) > 0:
+                return (True, messages)
+            
+            # wait and reduce
+            time.sleep (float (1) / float (wait_factor))
+            wait_loop -= 1
+        # end while
+    # end if
+    
     return (True, "PUBLISH: message published without error")
 
 def domain_view (domain_name, session):
@@ -285,3 +371,4 @@ def logout (session):
         return (False, "LOGOUT ERROR: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
         
     return (True, "INFO: logout request OK: status=%d, reason=%s :: %s" % (result.status, result.reason, body))
+
