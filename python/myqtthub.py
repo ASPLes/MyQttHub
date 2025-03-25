@@ -47,6 +47,48 @@ def gen_password ():
         x += 1
     return str(new_pass)
 
+def parse_json (content):
+    """
+    Parses the provided json content returning a python object
+    representing it.
+    """
+    try:                                                                                                                                                                                                                                  
+        import json
+    except Exception:
+        # import and rename
+        try:                                                                                                                                                                                                                              
+            import simplejson
+        except Exception:
+            return None
+        # rename
+        json = simplejson
+
+    if 'loads' in dir(json):
+        return json.loads (content, strict=False)
+    return json.read (content)
+
+def to_json (_object, pretty = False):
+    """
+    Converts a python object into a json representation.
+    """
+    try:
+        import json
+    except Exception:
+        # import and rename
+        import simplejson
+        json = simplejson 
+    if 'dumps' in dir(json):
+        if pretty:
+            try:
+                return json.dumps (_object, sort_keys=True, indent=4)
+            except UnicodeDecodeError:
+                return json.dumps (_object, sort_keys=True, indent=4, encoding="iso-8859-15")
+        try:
+            return json.dumps (_object)
+        except UnicodeDecodeError:
+            return json.dumps (_object, encoding="iso-8859-15")
+    return json.write (_object)
+
 def create_session (client_id, user_name, password, clean_session = True, host = "node02.myqtthub.com", port = 443):
     """
     Login to the platform.
@@ -176,21 +218,16 @@ def publish (session, topic, qos, msg, retain = False, dup = False, wait_for_rep
     # get login session and connection 
     (conn, login_data, params, headers) = __prepare_headers (session)
 
-    # params 
-    params['topic'] = topic # String value 
-    params['qos'] = qos  # Int value, 0, 1, 2
-    params['payload'] = base64.b64encode (msg)  # Message base64 encoded
-    params['retain'] = False
-    params['dup'] = False
-
     if wait_for_reply and wait_for_reply > 0:
         # BEGIN: wait for reply support
         import hashlib
-        replytopic              = "reply/" + hashlib.md5 ("/%s" % gen_password ()).hexdigest ()
-        params['replytopic'] = replytopic
+        replytopic        = "reply/" + hashlib.md5 ("/%s" % gen_password ()).hexdigest ()
+        msg               = parse_json (msg)
+        msg['replytopic'] = replytopic
+        msg               = to_json (msg)
 
         # params
-        params['subscriptions'] = [(replytopic, 0)]
+        params['subscriptions'] = [(replytopic, 0)]   
 
         # send request
         dbg ("SUBSCRIBE :: %s by (clientId=%s, userName=%s).." % (replytopic, session['client_id'], session['user_name']))
@@ -205,8 +242,15 @@ def publish (session, topic, qos, msg, retain = False, dup = False, wait_for_rep
         subscribe_codes = json.loads (body)
         dbg ("publish: configured wait_for_reply=%d with reply SUBSCRIBE: request OK: status=%d, reason=%s :: %s" % (wait_for_reply, result.status, result.reason, subscribe_codes))
         # END: wait for reply support
-    # end if
-    
+    # end if    
+
+    # params 
+    params['topic'] = topic # String value 
+    params['qos'] = qos  # Int value, 0, 1, 2
+    params['payload'] = base64.b64encode (msg)  # Message base64 encoded
+    params['retain'] = False
+    params['dup'] = False
+
     # send PUBLISH
     dbg ("PUBLISH :: (%s) by (clientId=%s, userName=%s).." % (topic, session['client_id'], session['user_name']))
     conn.request ("POST", "/publish", json.dumps (params), headers)
